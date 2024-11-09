@@ -7,7 +7,7 @@
 - [Hardhat](https://hardhat.org/) (Development Framework)
 - [Ethers.js](https://docs.ethers.io/v5/) (Blockchain Interaction)
 - [React.js](https://reactjs.org/) (Frontend Framework)
-- [MetaMask](https://metamask.io/)
+- [MetaMask](https://metamask.io/)(Blockchain Wallet)
 
 ## Requirements For Initial Setup
 - Install [NodeJS](https://nodejs.org/en/). Recommended to use the LTS version.
