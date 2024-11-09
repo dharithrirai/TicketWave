@@ -1,33 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react';
 
 // Import Components
-import Seat from './Seat'
+import Seat from './Seat';
 
 // Import Assets
-import close from '../assets/close.svg'
+import close from '../assets/close.svg';
 
 const SeatChart = ({ occasion, tokenMaster, provider, setToggle }) => {
-  const [seatsTaken, setSeatsTaken] = useState(false)
-  const [hasSold, setHasSold] = useState(false)
+  const [seatsTaken, setSeatsTaken] = useState([]);
+  const [hasSold, setHasSold] = useState(false);
 
-  const getSeatsTaken = async () => {
-    const seatsTaken = await tokenMaster.getSeatsTaken(occasion.id)
-    setSeatsTaken(seatsTaken)
-  }
+  const getSeatsTaken = useCallback(async () => {
+    const takenSeats = await tokenMaster.getSeatsTaken(occasion.id);
+    setSeatsTaken(takenSeats);
+  }, [tokenMaster, occasion.id]);
 
   const buyHandler = async (_seat) => {
-    setHasSold(false)
+    setHasSold(false);
 
-    const signer = await provider.getSigner()
-    const transaction = await tokenMaster.connect(signer).mint(occasion.id, _seat, { value: occasion.cost })
-    await transaction.wait()
+    const signer = await provider.getSigner();
+    const transaction = await tokenMaster.connect(signer).mint(occasion.id, _seat, { value: occasion.cost });
+    await transaction.wait();
 
-    setHasSold(true)
-  }
+    setHasSold(true);
+  };
 
   useEffect(() => {
-    getSeatsTaken()
-  }, [hasSold])
+    getSeatsTaken();
+  }, [getSeatsTaken, hasSold]);
 
   return (
     <div className="occasion">
@@ -42,7 +42,7 @@ const SeatChart = ({ occasion, tokenMaster, provider, setToggle }) => {
           <strong>STAGE</strong>
         </div>
 
-        {seatsTaken && Array(25).fill(1).map((e, i) =>
+        {Array(25).fill(1).map((_, i) => (
           <Seat
             i={i}
             step={1}
@@ -52,15 +52,15 @@ const SeatChart = ({ occasion, tokenMaster, provider, setToggle }) => {
             maxRows={5}
             seatsTaken={seatsTaken}
             buyHandler={buyHandler}
-            key={i}
+            key={`left-${i}`}
           />
-        )}
+        ))}
 
-        <div className="occasion__spacer--1 ">
+        <div className="occasion__spacer--1">
           <strong>WALKWAY</strong>
         </div>
 
-        {seatsTaken && Array(Number(occasion.maxTickets) - 50).fill(1).map((e, i) =>
+        {Array(Number(occasion.maxTickets) - 50).fill(1).map((_, i) => (
           <Seat
             i={i}
             step={26}
@@ -70,29 +70,29 @@ const SeatChart = ({ occasion, tokenMaster, provider, setToggle }) => {
             maxRows={15}
             seatsTaken={seatsTaken}
             buyHandler={buyHandler}
-            key={i}
+            key={`middle-${i}`}
           />
-        )}
+        ))}
 
         <div className="occasion__spacer--2">
           <strong>WALKWAY</strong>
         </div>
 
-        {seatsTaken && Array(25).fill(1).map((e, i) =>
+        {Array(25).fill(1).map((_, i) => (
           <Seat
             i={i}
-            step={(Number(occasion.maxTickets) - 24)}
+            step={Number(occasion.maxTickets) - 24}
             columnStart={22}
             maxColumns={5}
             rowStart={2}
             maxRows={5}
             seatsTaken={seatsTaken}
             buyHandler={buyHandler}
-            key={i}
+            key={`right-${i}`}
           />
-        )}
+        ))}
       </div>
-    </div >
+    </div>
   );
 }
 
